@@ -53,6 +53,6 @@ def delete_task(task_id: str):
         if result.deleted_count == 1:
             return {'message': "Task deleted successfully"}
         else:
-            return {'message': 'task not found'}
+            return {'message': 'Task not found'}
     except Exception as e:
         return {"error": str(e)}
