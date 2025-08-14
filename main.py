@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from pymongo import MongoClient
 from pydantic import BaseModel
+from bson import ObjectId
 
 app = FastAPI()
 
@@ -13,11 +14,8 @@ class Task(BaseModel):
     description: str
     completed: bool = False
 
-def serialize_task(task):
-    return {
-        "id": str(task["_id"]),
-        "title": task["title"]
-    }
+class TaskUpdate(BaseModel):
+    title: str
 
 
 @app.get("/")
@@ -35,3 +33,14 @@ def get_tasks():
 def add_task(task: Task):
     result = task_collection.insert_one(task.dict())
     return {'message': 'task added'}
+
+@app.put("/tasks/update/{task_id}")
+def update_task(task_id: str, task: TaskUpdate):
+    result = task_collection.update_one(
+        {"_id": ObjectId(task_id)},
+        {"$set": {"title": task.title}}
+    )
+    if result.modified_count == 1:
+        return {"message": "Task updated"}
+    else:
+        return {"message": "Task not updated"}
