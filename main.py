@@ -29,7 +29,7 @@ def get_tasks():
         task["_id"] = str(task["_id"])
     return tasks
 
-@app.post("tasks/add")
+@app.post("/tasks/add")
 def add_task(task: Task):
     result = task_collection.insert_one(task.dict())
     return {'message': 'task added'}
@@ -44,3 +44,14 @@ def update_task(task_id: str, task: TaskUpdate):
         return {"message": "Task updated"}
     else:
         return {"message": "Task not updated"}
+
+@app.delete('/tasks/delete/{task_id}')
+def delete_task(task_id: str):
+    try:
+        result = task_collection.delete_one({"_id": ObjectId(task_id)})
+        if result.deleted_count == 1:
+            return {'message': "Task deleted successfully"}
+        else:
+            return {'message': 'task not found'}
+    except Exception as e:
+        return {"error": str(e)}
