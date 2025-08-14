@@ -16,6 +16,7 @@ class Task(BaseModel):
 
 class TaskUpdate(BaseModel):
     title: str
+    description: str
 
 
 @app.get("/")
