@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from pymongo import MongoClient
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,8 +19,8 @@ task_db = client['task_db']
 task_collection = task_db['tasks']
 
 class Task(BaseModel):
-    title: str
-    description: str
+    title: str = Field(...,min_length=5)
+    description: str = Field(...,min_length=5)
     completed: bool = False
 
 class TaskUpdate(BaseModel):
