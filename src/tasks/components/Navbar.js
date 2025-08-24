@@ -6,7 +6,7 @@ function Navbar() {
     
     return (
         <nav className="bg-blue-500 flex justify-between items-center p-3 shadow-xl">
-            <div className="logo"><h2 className="text-white text-2xl font-semibold">TaskList</h2></div>
+            <div className="logo"><h2 className="text-white text-2xl font-semibold">TaskApp</h2></div>
             <div className="profile cursor-pointer">
                 <img src="/assets/alex.jpg" className="rounded-full hover:border" onClick={() => setShowCard((prev) => !prev)} alt='image' width={50} />
                 {showCard && (
