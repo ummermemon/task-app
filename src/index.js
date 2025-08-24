@@ -3,11 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import List from './tasks/List';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Add from './tasks/Add';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <List />
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<List />} />
+        <Route path='/add' element={<Add />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

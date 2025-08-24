@@ -1,6 +1,7 @@
 import { PencilSimple, Power, Trash } from "phosphor-react";
 import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
+import { Link } from "react-router-dom";
 
 function List() {
   const [tasks, setTasks] = useState([]);
@@ -16,7 +17,7 @@ function List() {
       <div className="grid grid-cols-12 m-5">
         <div className="col-span-12 md:col-span-6 lg:col-span-6">
           <div className="card rounded-xl bg-gray-100 p-5 border shadow-2xl">
-            <button className="bg-blue-500 text-white p-2 rounded-lg my-3 text-sm">+ Add Task</button>
+            <Link to={'/add'} className="bg-blue-500 text-white p-2 rounded-lg my-3 text-sm">+ Add Task</Link>
             <table className="w-full border">
               <thead>
                 <tr className="border-b">
