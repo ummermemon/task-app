@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from "sweetalert2";
-import { Helmet } from 'react-helmet'
+import { useEffect } from 'react'
 
 function Add() {
     const [title, setTitle] = useState('');
@@ -45,11 +45,12 @@ function Add() {
         }
     }
 
+    useEffect(() => {
+        document.title = "Add Task | TaskApp";
+    }, []);
+
     return (
         <>
-            <Helmet>
-                <title>Add Task | TaskApp</title>
-            </Helmet>
             <Navbar />
             <div className="grid grid-cols-12 m-5">
                 <div className="col-span-12 md:col-span-6 lg:col-span-6">

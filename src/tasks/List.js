@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { Helmet } from "react-helmet";
 
 function List() {
   const [tasks, setTasks] = useState([]);
@@ -34,18 +33,19 @@ function List() {
           });
 
         } catch (error) {
-            Swal.fire("Error!", "Something went wrong.", "warning");
+          Swal.fire("Error!", "Something went wrong.", "warning");
         }
 
       }
     });
   };
 
+  useEffect(() => {
+    document.title = "Task List | TaskApp";
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>Task List | TaskApp</title>
-      </Helmet>
       <Navbar />
       <div className="grid grid-cols-12 m-5">
         <div className="col-span-12 md:col-span-6 lg:col-span-6">
