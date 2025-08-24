@@ -3,6 +3,8 @@ import Navbar from './components/Navbar'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Swal from "sweetalert2";
+
 function Add() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -18,7 +20,11 @@ function Add() {
                 body: JSON.stringify(data)
             });
             if (response.ok) {
-                navigate('/');
+                Swal.fire({
+                    title: "Task Added!",
+                    text: "You've added new task!",
+                    icon: "success"
+                }).then(() => navigate('/'));
             } else {
                 const result = await response.json();
                 if (result.detail && Array.isArray(result.detail)) {
