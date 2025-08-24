@@ -2,6 +2,7 @@ import { PencilSimple, Power, Trash } from "phosphor-react";
 import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function List() {
   const [tasks, setTasks] = useState([]);
@@ -10,7 +11,35 @@ function List() {
       .then((response) => response.json())
       .then((result) => setTasks(result))
       .catch((error) => console.error(error))
-  }, [])
+  }, []);
+
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = fetch(`http://127.0.0.1:8000/tasks/delete/${id}`, {
+            method: 'DELETE',
+          }).then(() => {
+            Swal.fire("Deleted!", "Your task has been deleted.", "success")
+            setTasks(tasks.filter(task => task._id !== id));
+          });
+
+        } catch (error) {
+            Swal.fire("Error!", "Something went wrong.", "warning");
+        }
+
+      }
+    });
+  };
+
   return (
     <>
       <Navbar />
@@ -40,7 +69,15 @@ function List() {
                     <td className="px-4 py-2 border-r">{task.title}</td>
                     <td className="px-4 py-2 text-gray-500 border-r">{task.description}</td>
                     <td className={`px-2 ${task.completed == true ? 'text-blue-500' : 'text-red-500'} text-sm rounded-lg border-r`}>{task.completed == true ? "Completed" : "Incomplete"}</td>
-                    <td className="px-4 py-2 flex space-x-5"><Link to={`/edit/${task._id}`} ><PencilSimple weight="light" size={20} /></Link> <Trash size={20} weight="light" /></td>
+                    <td className="px-4 py-2 flex space-x-5">
+                      <Link to={`/edit/${task._id}`} >
+                        <PencilSimple weight="light" size={20} />
+                      </Link>
+                      <button onClick={() => handleDelete(task._id)}>
+
+                        <Trash size={20} weight="light" />
+                      </button>
+                    </td>
                   </tr>
 
                 ))}
