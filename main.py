@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from bson import ObjectId
@@ -38,6 +38,15 @@ def get_tasks():
     for task in tasks:
         task["_id"] = str(task["_id"])
     return tasks
+
+@app.get('/tasks/show/{task_id}')
+def show_task(task_id: str):
+    task = task_collection.find_one({"_id":ObjectId(task_id)})
+    if task:
+        task["_id"] = str(task["_id"])
+        return task
+    else:
+        raise HTTPException(status_code=404, detail="Task not found")
 
 @app.post("/tasks/add")
 def add_task(task: Task):
