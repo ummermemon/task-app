@@ -5,6 +5,7 @@ import List from './tasks/List';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Add from './tasks/Add';
+import Edit from './tasks/Edit';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,6 +14,7 @@ root.render(
       <Routes>
         <Route path='/' element={<List />} />
         <Route path='/add' element={<Add />} />
+        <Route path='/edit/:id' element={<Edit />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

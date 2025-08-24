@@ -16,8 +16,14 @@ function List() {
       <Navbar />
       <div className="grid grid-cols-12 m-5">
         <div className="col-span-12 md:col-span-6 lg:col-span-6">
-          <div className="card rounded-xl bg-gray-100 p-5 border shadow-2xl">
-            <Link to={'/add'} className="bg-blue-500 text-white p-2 rounded-lg my-3 text-sm">+ Add Task</Link>
+          <div className="my-4">
+            <h2 className="text-2xl">Task List</h2>
+            <span className="text-sm text-gray-500">All tasks listed here!</span>
+          </div>
+          <div className="card rounded-xl  p-5 border shadow-2xl">
+            <div className="mt-2 mb-5">
+              <Link to={'/add'} className="bg-blue-500 text-white p-2 rounded-lg my-5 text-sm">+ Add Task</Link>
+            </div>
             <table className="w-full border">
               <thead>
                 <tr className="border-b">
@@ -28,14 +34,14 @@ function List() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {tasks.map((task,idx) => (
-                <tr className="">
+                {tasks.map((task, idx) => (
+                  <tr className="">
 
-                  <td className="px-4 py-2 border-r">{task.title}</td>
-                  <td className="px-4 py-2 text-gray-500 border-r">{task.description}</td>
-                  <td className={`px-2 ${task.completed == true ? 'text-blue-500' : 'text-red-500'} text-sm rounded-lg border-r`}>{task.completed == true ? "Completed" : "Incomplete"}</td>
-                  <td className="px-4 py-2 flex space-x-5"><PencilSimple weight="light" size={20} /> <Trash size={20} weight="light" /></td>
-                </tr>
+                    <td className="px-4 py-2 border-r">{task.title}</td>
+                    <td className="px-4 py-2 text-gray-500 border-r">{task.description}</td>
+                    <td className={`px-2 ${task.completed == true ? 'text-blue-500' : 'text-red-500'} text-sm rounded-lg border-r`}>{task.completed == true ? "Completed" : "Incomplete"}</td>
+                    <td className="px-4 py-2 flex space-x-5"><Link to={`/edit/${task._id}`} ><PencilSimple weight="light" size={20} /></Link> <Trash size={20} weight="light" /></td>
+                  </tr>
 
                 ))}
               </tbody>
