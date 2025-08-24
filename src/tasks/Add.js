@@ -6,24 +6,38 @@ import { useNavigate } from 'react-router-dom'
 function Add() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [errors, setErrors] = useState([])
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
-        const data = {"title": title, "description":description}
+        const data = { "title": title, "description": description }
         try {
             const response = await fetch('http://127.0.0.1:8000/tasks/add', {
                 method: 'POST',
-                headers: { 'Content-Type':'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
             if (response.ok) {
                 navigate('/');
+            } else {
+                const result = await response.json();
+                if (result.detail && Array.isArray(result.detail)) {
+                    const fieldErrors = {};
+                    result.detail.forEach(item => {
+                        if (item.loc && item.loc.length > 1) {
+                            const field = item.loc[1];
+                            fieldErrors[field] = item.msg;
+                        }
+                    });
+                    setErrors(fieldErrors);
+
+                }
             }
         } catch (error) {
-            console.log('Error:',error);
+            setErrors({ general: 'Something went wrong' });
         }
     }
-    
+
     return (
         <>
             <Navbar />
@@ -36,15 +50,31 @@ function Add() {
                     </div>
                     <div className="card rounded-xl  p-5 border shadow-2xl">
                         <form action={handleSubmit} method="post">
-                            <div className="flex flex-col mt-3">
-                                <label htmlFor="titleInput">Title <span className='text-red-500'>*</span></label>
-                                <input type="text" id='titleInput' placeholder='Enter Title' className="bg-gray-200  rounded-lg p-4" required value={title} onChange={e => setTitle(e.target.value)} />
+                            <div className="flex flex-col">
+
+
+                                <div className="flex flex-col mt-3">
+                                    <label htmlFor="titleInput">Title <span className='text-red-500'>*</span></label>
+                                    <input type="text" id='titleInput' placeholder='Enter Title' className="bg-gray-200  rounded-lg p-4" required value={title} onChange={e => setTitle(e.target.value)} />
+                                    {errors.title && (
+                                        <span className="text-red-500 text-sm mt-1">{errors.title}</span>
+                                    )}
+                                </div>
+                                <div className="flex flex-col mt-3">
+                                    <label htmlFor="descriptionInput">Description <span className='text-red-500'>*</span></label>
+                                    <textarea type="text" id='descriptionInput' placeholder='Enter Description' className="bg-gray-200 rounded-lg p-4" required value={description} onChange={e => setDescription(e.target.value)}></textarea>
+                                    {errors.description && (
+                                        <span className="text-red-500 text-sm mt-1">{errors.description}</span>
+                                    )}
+                                </div>
+                                <div>
+
+                                    <button type='submit' className="bg-blue-500 px-3 py-2 text-white mt-3 rounded-lg">Add Task</button>
+                                </div>
+                                {errors.general && (
+                                    <span className="text-red-500 text-sm mt-1">{errors.general}</span>
+                                )}
                             </div>
-                            <div className="flex flex-col mt-3">
-                                <label htmlFor="descriptionInput">Description <span className='text-red-500'>*</span></label>
-                                <textarea type="text" id='descriptionInput' placeholder='Enter Description' className="bg-gray-200 rounded-lg p-4" required value={description} onChange={e => setDescription(e.target.value)}></textarea>
-                            </div>
-                            <button type='submit' className="bg-blue-500 px-3 py-2 text-white mt-3 rounded-lg">Add Task</button>
                         </form>
                     </div>
                 </div>
