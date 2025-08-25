@@ -1,11 +1,13 @@
-import { PencilSimple, Power, Trash } from "phosphor-react";
+import { PencilSimple, Power, Trash, Check } from "phosphor-react";
 import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function List() {
   const [tasks, setTasks] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     fetch('http://127.0.0.1:8000/tasks/')
       .then((response) => response.json())
@@ -39,6 +41,29 @@ function List() {
       }
     });
   };
+
+  const handleStatusUpdate = async (id) => {
+    const data = { "completed": true }
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/tasks/update/status/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (response.ok) {
+        Swal.fire({
+          title: "Task Status Updated!",
+          text: "The task status has been updated!",
+          icon: "success"
+        });
+        setTasks(tasks.map(task =>
+          task._id === id ? { ...task, completed: true } : task
+        ));
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     document.title = "Task List | TaskApp";
@@ -84,6 +109,11 @@ function List() {
 
                         <Trash size={20} weight="light" />
                       </button>
+                      {!task.completed && (
+                        <button title="Mark as Complete" onClick={() => handleStatusUpdate(task._id)}>
+                          <Check size={20} weight="light" />
+                        </button>
+                      )}
                     </td>
                   </tr>
 
