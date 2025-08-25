@@ -17,15 +17,19 @@ app.add_middleware(
 client = MongoClient('mongodb://localhost:27017/')
 task_db = client['task_db']
 task_collection = task_db['tasks']
+user_collection = task_db['users']
 
 class Task(BaseModel):
-    title: str = Field(...,min_length=5)
-    description: str = Field(...,min_length=5)
+    title: str = Field(...,min_length=5,max_length=25)
+    description: str = Field(...,min_length=5,max_length=150)
     completed: bool = False
 
 class TaskUpdate(BaseModel):
-    title: str
-    description: str
+    title: str = Field(...,min_length=5,max_length=25)
+    description: str = Field(...,min_length=5,max_length=150)
+
+class TaskStatusUpdate(BaseModel):
+    completed: bool
 
 
 @app.get("/")
@@ -63,6 +67,17 @@ def update_task(task_id: str, task: TaskUpdate):
         return {"message": "Task updated"}
     else:
         return {"message": "Task not updated"}
+
+@app.put("/tasks/update/status/{task_id}")
+def task_status_update(task_id: str, task: TaskStatusUpdate):
+    result = task_collection.update_one(
+        {"_id": ObjectId(task_id)},
+        {"$set": {"completed": task.completed}}
+    )
+    if result.modified_count == 1:
+        return {"message": "Task Status updated"}
+    else:
+        return {"message": "Task status not updated"}
 
 @app.delete('/tasks/delete/{task_id}')
 def delete_task(task_id: str):
