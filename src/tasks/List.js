@@ -48,7 +48,10 @@ function List() {
     <>
       <Navbar />
       <div className="grid grid-cols-12 m-5">
-        <div className="col-span-12 md:col-span-6 lg:col-span-6">
+        <div className="col-span-12 md:hidden lg:block lg:col-span-6">
+          <img src="/assets/notes-bro.png" width={600} />
+        </div>
+        <div className="col-span-12 md:col-span-12 lg:col-span-6">
           <div className="my-4">
             <h2 className="text-2xl">Task List</h2>
             <span className="text-sm text-gray-500">All tasks listed here!</span>
