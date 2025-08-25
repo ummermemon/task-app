@@ -64,9 +64,11 @@ function Edit() {
   return (
     <>
         <Navbar />
-        <div className="grid grid-cols-12 m-5">
-                <div className="col-span-12 md:col-span-6 lg:col-span-6">
-                    <Link to={'/'} className="bg-gray-500 text-white px-3 py-2 mt-2 rounded-lg"> Back</Link>
+        <div className="grid grid-cols-12 m-5"> 
+                <div className="col-span-12 md:hidden lg:block lg:col-span-6">
+                    <img src="/assets/update.png" width={600} />
+                </div>
+                <div className="col-span-12 md:col-span-12 lg:col-span-6">
                     <div className="my-4">
                         <h2 className="text-2xl">Edit Task</h2>
                         <span className="text-sm text-gray-500">Update task details!</span>
