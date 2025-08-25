@@ -3,16 +3,48 @@ import Navbar from './components/Navbar'
 import { useParams } from 'react-router-dom'
 import { useEffect,useState } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+
 function Edit() {
   const { id } = useParams();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState([]);
   const [task, setTask] = useState([]);
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    alert('handle submit called!')
-  }
+  const handleSubmit = async () => {
+          const data = { "title": title, "description": description }
+          try {
+              const response = await fetch(`http://127.0.0.1:8000/tasks/update/${id}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(data)
+              });
+              if (response.ok) {
+                  Swal.fire({
+                      title: "Task Updated!",
+                      text: "The task has been updated!",
+                      icon: "success"
+                  }).then(() => navigate('/'));
+              } else {
+                  const result = await response.json();
+                  if (result.detail && Array.isArray(result.detail)) {
+                      const fieldErrors = {};
+                      result.detail.forEach(item => {
+                          if (item.loc && item.loc.length > 1) {
+                              const field = item.loc[1];
+                              fieldErrors[field] = item.msg;
+                          }
+                      });
+                      setErrors(fieldErrors);
+                  }
+              }
+          } catch (error) {
+              setErrors({ general: 'Something went wrong' });
+          }
+      }
   useEffect(() => {
     try {
       const response = fetch(`http://127.0.0.1:8000/tasks/show/${id}`,{
@@ -20,9 +52,6 @@ function Edit() {
     }).then(response => response.json()).then(result => {
         setTitle(result.title || '');
         setDescription(result.description || '');
-        document.title = result.title
-          ? `Edit: ${result.title} | TaskApp`
-          : "Edit Task | TaskApp";
       });
     } catch (error) {
       
