@@ -49,7 +49,7 @@ function List() {
       <Navbar />
       <div className="grid grid-cols-12 m-5">
         <div className="col-span-12 md:hidden lg:block lg:col-span-6">
-          <img src="/assets/notes-bro.png" width={600} />
+          <img src="/assets/list.png" width={600} />
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-6">
           <div className="my-4">
