@@ -57,7 +57,7 @@ def add_task(task: Task):
 def update_task(task_id: str, task: TaskUpdate):
     result = task_collection.update_one(
         {"_id": ObjectId(task_id)},
-        {"$set": {"title": task.title}}
+        {"$set": {"title": task.title, "description": task.description}}
     )
     if result.modified_count == 1:
         return {"message": "Task updated"}
