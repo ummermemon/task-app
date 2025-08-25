@@ -9,7 +9,7 @@ function List() {
   const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/tasks/')
+    fetch(`${process.env.REACT_APP_API_URL}/tasks/`)
       .then((response) => response.json())
       .then((result) => setTasks(result))
       .catch((error) => console.error(error))
@@ -45,7 +45,7 @@ function List() {
   const handleStatusUpdate = async (id) => {
     const data = { "completed": true }
     try {
-      const response = await fetch(`http://127.0.0.1:8000/tasks/update/status/${id}`, {
+      const response = await fetch(`${process.env.BACKEND_API_URL}/tasks/update/status/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
