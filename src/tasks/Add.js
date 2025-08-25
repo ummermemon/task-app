@@ -15,7 +15,7 @@ function Add() {
     const handleSubmit = async () => {
         const data = { "title": title, "description": description }
         try {
-            const response = await fetch('http://127.0.0.1:8000/tasks/add', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

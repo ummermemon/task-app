@@ -17,7 +17,7 @@ function Edit() {
   const handleSubmit = async () => {
           const data = { "title": title, "description": description }
           try {
-              const response = await fetch(`http://127.0.0.1:8000/tasks/update/${id}`, {
+              const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/update/${id}`, {
                   method: 'PUT',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(data)
@@ -47,7 +47,7 @@ function Edit() {
       }
   useEffect(() => {
     try {
-      const response = fetch(`http://127.0.0.1:8000/tasks/show/${id}`,{
+      const response = fetch(`${process.env.REACT_APP_API_URL}/tasks/show/${id}`,{
       method: 'GET'
     }).then(response => response.json()).then(result => {
         setTitle(result.title || '');

@@ -27,7 +27,7 @@ function List() {
     }).then((result) => {
       if (result.isConfirmed) {
         try {
-          const response = fetch(`http://127.0.0.1:8000/tasks/delete/${id}`, {
+          const response = fetch(`${process.env.REACT_APP_API_URL}/tasks/delete/${id}`, {
             method: 'DELETE',
           }).then(() => {
             Swal.fire("Deleted!", "Your task has been deleted.", "success")
@@ -45,7 +45,7 @@ function List() {
   const handleStatusUpdate = async (id) => {
     const data = { "completed": true }
     try {
-      const response = await fetch(`${process.env.BACKEND_API_URL}/tasks/update/status/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/update/status/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
