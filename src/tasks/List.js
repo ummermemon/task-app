@@ -95,7 +95,13 @@ function List() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {tasks.map((task, idx) => (
+                {tasks.length == 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center text-gray-500">
+                      No tasks found
+                    </td>
+                  </tr>
+                ) : tasks.map((task, idx) => (
                   <tr className="">
 
                     <td className="px-4 py-2 border-r">{task.title}</td>
