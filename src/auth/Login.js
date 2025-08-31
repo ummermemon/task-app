@@ -1,0 +1,162 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Swal from "sweetalert2";
+import { useEffect } from 'react'
+
+function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState([])
+    const navigate = useNavigate();
+
+    const handleSubmit = async () => {
+        const data = { "email": email, "password": password }
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+
+            if (response.ok) {
+                if (result.status == true) {
+                    
+                    localStorage.setItem("token", result.token);
+                    Swal.fire({
+                        title: "Login Successfully!",
+                        text: "You've logged in successfully!",
+                        icon: "success"
+                    }).then(() => navigate('/'));
+
+                }else{
+                    setErrors({ general: result.message });
+                }
+
+            } else {
+                if (result.detail && Array.isArray(result.detail)) {
+                    const fieldErrors = {};
+                    result.detail.forEach(item => {
+                        if (item.loc && item.loc.length > 1) {
+                            const field = item.loc[1];
+                            fieldErrors[field] = item.msg;
+                        }
+                    });
+                    setErrors(fieldErrors);
+                }
+            }
+        } catch (error) {
+            setErrors({ general: 'Something went wrong' });
+        }
+    }
+
+    useEffect(() => {
+        document.title = "Login | TaskApp";
+    }, []);
+
+    return (
+        <>
+
+            <div className="grid grid-cols-12 min-h-screen">
+                {/* Left side image */}
+                <div className="hidden lg:flex lg:col-span-8 bg-gray-100 items-center justify-center">
+                    <div className="text-center">
+                        {/* Centered Image */}
+                        <img
+                            src="/assets/login.png"
+                            alt="Login"
+                            className="w-3/6 mx-auto p-10"
+                        />
+
+                        {/* Text below the image */}
+                        <h2 className="text-2xl mt-4">Login</h2>
+                        <p className="text-gray-500 text-sm">Enter credentials to continue!</p>
+                    </div>
+                </div>
+
+                {/* Right side login form */}
+                <div className="col-span-12 lg:col-span-4 flex items-center justify-center p-6">
+                    <div className="w-full max-w-md  p-8">
+                        <div className="mb-6">
+                            <h2 className="text-3xl font-semibold text-blue-500">TaskApp</h2>
+                            <p className="text-sm  mt-2 text-gray-500">Manage your todo tasks here!</p>
+                        </div>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSubmit({ email, password, setErrors });
+                            }}
+                            className="space-y-4"
+                        >
+                            {/* Email */}
+                            <div className="flex flex-col">
+                                <label htmlFor="emailInput" className="mb-1 font-medium">
+                                    Email <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    id="emailInput"
+                                    placeholder="Enter email"
+                                    className="bg-gray-100 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                                {errors.email && (
+                                    <span className="text-red-500 text-sm mt-1">{errors.email}</span>
+                                )}
+                            </div>
+
+                            {/* Password */}
+                            <div className="flex flex-col">
+                                <label htmlFor="passwordInput" className="mb-1 font-medium">
+                                    Password <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="password"
+                                    id="passwordInput"
+                                    placeholder="Enter password"
+                                    className="bg-gray-100 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                {errors.password && (
+                                    <span className="text-red-500 text-sm mt-1">{errors.password}</span>
+                                )}
+                            </div>
+
+                            {/* Submit */}
+                            <button
+                                type="submit"
+                                className="w-full bg-blue-500 text-white font-medium py-3 rounded-lg hover:bg-blue-600 transition"
+                            >
+                                Login
+                            </button>
+
+                            {/* General error */}
+                            {errors.general && (
+                                <span className="text-red-500 text-sm mt-2 block">
+                                    {errors.general}
+                                </span>
+                            )}
+                        </form>
+
+                        {/* Footer */}
+                        <p className="text-center text-gray-500 text-sm mt-6">
+                            Don’t have an account?{" "}
+                            <Link to={"/signup"} className="text-blue-500 hover:underline">
+                                Sign up
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
+
+export default Login

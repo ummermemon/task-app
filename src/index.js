@@ -2,21 +2,33 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import List from './tasks/List';
+import Login from './auth/Login';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Add from './tasks/Add';
 import Edit from './tasks/Edit';
+import PrivateRoute from './PrivateRoute'
+import AuthRoute from './AuthRoute'
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
+      <AuthRoute>
+
       <Routes>
-        <Route path='/' element={<List />} />
-        <Route path='/add' element={<Add />} />
-        <Route path='/edit/:id' element={<Edit />} />
+        <Route path='/login' element={<Login />} />
       </Routes>
+      </AuthRoute>
+      <PrivateRoute>
+        <Routes>
+          <Route path='/' element={<List />} />
+          <Route path='/add' element={<Add />} />
+          <Route path='/edit/:id' element={<Edit />} />
+        </Routes>
+      </PrivateRoute>
+      
     </BrowserRouter>
   </React.StrictMode>
 );

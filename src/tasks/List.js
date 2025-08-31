@@ -9,7 +9,10 @@ function List() {
   const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/tasks/`)
+    fetch(`${process.env.REACT_APP_API_URL}/tasks/`,{
+      headers:{
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }})
       .then((response) => response.json())
       .then((result) => setTasks(result))
       .catch((error) => console.error(error))
@@ -29,6 +32,9 @@ function List() {
         try {
           const response = fetch(`${process.env.REACT_APP_API_URL}/tasks/delete/${id}`, {
             method: 'DELETE',
+            headers:{
+              'Authorization': `Bearer ${localStorage.getItem("token")}`
+            }
           }).then(() => {
             Swal.fire("Deleted!", "Your task has been deleted.", "success")
             setTasks(tasks.filter(task => task._id !== id));
@@ -47,7 +53,10 @@ function List() {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/update/status/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          
+        },
         body: JSON.stringify(data)
       });
       if (response.ok) {
