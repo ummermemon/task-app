@@ -1,15 +1,28 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Depends, Header
 from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.hash import bcrypt
+import jwt
+from datetime import datetime, timedelta
+from fastapi.staticfiles import StaticFiles
+import os
+
 
 app = FastAPI()
 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "uploads")
+
+# Mount it
+app.mount("/uploads", StaticFiles(directory=UPLOAD_FOLDER), name="uploads")
+
+SECRET_KEY = "UMMER_5678"
+ALGORITHM = "HS256"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins, you can restrict to specific domains
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,6 +57,34 @@ class TaskUpdate(BaseModel):
 class TaskStatusUpdate(BaseModel):
     completed: bool
 
+def get_current_user(Authorization: str = Header(None)):
+    if Authorization is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = Authorization.split(" ")[1]  # Expect "Bearer <token>"
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.get("/user/{id}")
+def get_user(id: str):
+    user = user_collection.find_one({"_id": ObjectId(id)})
+    if not user:
+        return {"status": False, "message": "User not found"}
+
+    return {
+        "status": True,
+        "first_name":user['first_name'],
+        "last_name":user['last_name'],
+        "email": user["email"],
+        "profile_image": f"{user['profile_image']}"
+    }
+    
+
 @app.post("/signup")
 def signup(user: User):
 
@@ -67,19 +108,27 @@ def signup(user: User):
 def login(login: Login):
     user = user_collection.find_one({"email": login.email})
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        return {'status': False,'message':"Email or password is incorrect"}
 
     if not bcrypt.verify(login.password, user["password"]):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        return {'status': False,'message':"Email or password is incorrect"}
+    
+    payload = {
+        "sub": str(user["_id"]),
+        "email": user["email"],
+        "exp": datetime.utcnow() + timedelta(hours=2)
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return {"status": True,"message":"Successfully logged in.", "token":token}
 
-    return {"message": "Login successful"}
+
 
 @app.get("/")
 def home(request: Request):
     return {'hello':'world!'}
 
 @app.get("/tasks/")
-def get_tasks():
+def get_tasks(user=Depends(get_current_user)):
     tasks = list(task_collection.find())
     for task in tasks:
         task["_id"] = str(task["_id"])
