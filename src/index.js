@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import List from './tasks/List';
 import Login from './auth/Login';
+import Signup from './auth/Signup';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Add from './tasks/Add';
@@ -21,6 +22,14 @@ root.render(
           element={
             <AuthRoute>
               <Login />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <AuthRoute>
+              <Signup />
             </AuthRoute>
           }
         />

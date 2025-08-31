@@ -5,16 +5,18 @@ import { useNavigate } from 'react-router-dom'
 import Swal from "sweetalert2";
 import { useEffect } from 'react'
 
-function Login() {
+function Signup() {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState([])
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
-        const data = { "email": email, "password": password }
+        const data = { "first_name":firstName,"last_name":lastName,"email": email, "password": password }
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -23,15 +25,14 @@ function Login() {
 
             if (response.ok) {
                 if (result.status == true) {
-                    
                     localStorage.setItem("token", result.token);
                     Swal.fire({
-                        title: "Login Successfully!",
-                        text: "You've logged in successfully!",
+                        title: "Signed Up!",
+                        text: "You've signed up successfully!",
                         icon: "success"
                     }).then(() => navigate('/'));
 
-                }else{
+                } else {
                     setErrors({ general: result.message });
                 }
 
@@ -53,30 +54,24 @@ function Login() {
     }
 
     useEffect(() => {
-        document.title = "Login | TaskApp";
+        document.title = "Signup | TaskApp";
     }, []);
 
     return (
         <>
 
             <div className="grid grid-cols-12 min-h-screen">
-                {/* Left side image */}
                 <div className="hidden lg:flex lg:col-span-8 bg-gray-100 items-center justify-center">
                     <div className="text-center">
-                        {/* Centered Image */}
                         <img
                             src="/assets/login.png"
                             alt="Login"
                             className="w-3/6 mx-auto p-10"
                         />
-
-                        {/* Text below the image */}
-                        <h2 className="text-2xl mt-4">Login</h2>
-                        <p className="text-gray-500 text-sm">Enter credentials to continue!</p>
+                        <h2 className="text-2xl mt-4">Signup</h2>
+                        <p className="text-gray-500 text-sm">Enter details to register!</p>
                     </div>
                 </div>
-
-                {/* Right side login form */}
                 <div className="col-span-12 lg:col-span-4 flex items-center justify-center p-6">
                     <div className="w-full max-w-md  p-8">
                         <div className="mb-6">
@@ -87,11 +82,48 @@ function Login() {
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                handleSubmit({ email, password, setErrors });
+                                handleSubmit();
                             }}
                             className="space-y-4"
                         >
-                            {/* Email */}
+
+                            <div className="flex gap-4 mr-2">
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="firstNameInput" className="mb-1">
+                                        First Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="firstNameInput"
+                                        placeholder="Enter First Name"
+                                        className="bg-gray-100 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        required
+                                    />
+                                    {errors.first_name && (
+                                        <span className="text-red-500 text-sm mt-1">{errors.first_name}</span>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col w-1/2">
+                                    <label htmlFor="lastNameInput" className="mb-1">
+                                        Last Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="lastNameInput"
+                                        placeholder="Enter Last Name"
+                                        className="bg-gray-100 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        required
+                                    />
+                                    {errors.last_name && (
+                                        <span className="text-red-500 text-sm mt-1">{errors.last_name}</span>
+                                    )}
+                                </div>
+                            </div>
                             <div className="flex flex-col">
                                 <label htmlFor="emailInput" className="mb-1 ">
                                     Email <span className="text-red-500">*</span>
@@ -110,7 +142,6 @@ function Login() {
                                 )}
                             </div>
 
-                            {/* Password */}
                             <div className="flex flex-col">
                                 <label htmlFor="passwordInput" className="mb-1 ">
                                     Password <span className="text-red-500">*</span>
@@ -129,15 +160,13 @@ function Login() {
                                 )}
                             </div>
 
-                            {/* Submit */}
                             <button
                                 type="submit"
                                 className="w-full bg-blue-500 text-white font-medium py-3 rounded-lg hover:bg-blue-600 transition"
                             >
-                                Login
+                                Signup
                             </button>
 
-                            {/* General error */}
                             {errors.general && (
                                 <span className="text-red-500 text-sm mt-2 block">
                                     {errors.general}
@@ -145,11 +174,10 @@ function Login() {
                             )}
                         </form>
 
-                        {/* Footer */}
                         <p className="text-center text-gray-500 text-sm mt-6">
-                            Don’t have an account?{" "}
-                            <Link to={"/signup"} className="text-blue-500 hover:underline">
-                                Sign up
+                            Already have an account?{" "}
+                            <Link to={"/login"} className="text-blue-500 hover:underline">
+                                Login
                             </Link>
                         </p>
                     </div>
@@ -159,4 +187,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Signup

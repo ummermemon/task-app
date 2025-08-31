@@ -1,25 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
     const [showMenu, setShowMenu] = useState(false);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    const menuRef = useRef();
-
 
     useEffect(() => {
-        function handleClickOutside(event) {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setShowMenu(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    useEffect(() => {
-        // fetch user profile when Navbar loads
         const token = localStorage.getItem("token");
         if (token) {
             fetch(`${process.env.REACT_APP_API_URL}/user/me`, {
