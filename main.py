@@ -8,13 +8,13 @@ import jwt
 from datetime import datetime, timedelta
 from fastapi.staticfiles import StaticFiles
 import os
+from fastapi.security import OAuth2PasswordBearer
+
 
 
 app = FastAPI()
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "uploads")
-
-# Mount it
 app.mount("/uploads", StaticFiles(directory=UPLOAD_FOLDER), name="uploads")
 
 SECRET_KEY = "UMMER_5678"
@@ -57,31 +57,29 @@ class TaskUpdate(BaseModel):
 class TaskStatusUpdate(BaseModel):
     completed: bool
 
-def get_current_user(Authorization: str = Header(None)):
-    if Authorization is None:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    token = Authorization.split(" ")[1]  # Expect "Bearer <token>"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        return user_id
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
-@app.get("/user/{id}")
-def get_user(id: str):
-    user = user_collection.find_one({"_id": ObjectId(id)})
+@app.get("/user/me")
+def read_users_me(user_id: str = Depends(get_current_user)):
+    user = user_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
-        return {"status": False, "message": "User not found"}
+        raise HTTPException(status_code=404, detail="User not found")
 
     return {
         "status": True,
-        "first_name":user['first_name'],
-        "last_name":user['last_name'],
+        "first_name": user["first_name"],
+        "last_name": user["last_name"],
         "email": user["email"],
-        "profile_image": f"{user['profile_image']}"
+        "profile_image": user["profile_image"]
     }
     
 
