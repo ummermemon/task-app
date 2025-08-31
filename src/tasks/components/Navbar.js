@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { CaretDown,Power } from "phosphor-react";
 
 function Navbar() {
     const [showMenu, setShowMenu] = useState(false);
@@ -36,25 +37,20 @@ function Navbar() {
 
             {user && (
                 <div className="relative">
-                    <img
+                    {/* <img
                         src={`${process.env.REACT_APP_API_URL}/${user.profile_image}`}
                         alt="profile"
                         className="w-10 h-10 rounded-full cursor-pointer border-2 border-white"
                         onClick={() => setShowMenu(!showMenu)}
-                    />
+                    /> */}
+                    <h4 className=" text-white flex items-center gap-2 cursor-pointer" onClick={() => setShowMenu(!showMenu)} >{user.first_name} {user.last_name} <CaretDown size={16} /></h4>
                     {showMenu && (
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
-                            <Link
-                                to="/profile"
-                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                            >
-                                Edit Profile
-                            </Link>
                             <button
                                 onClick={handleLogout}
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                className="flex items-center gap-2 w-full text-left rounded-lg px-4 py-2 text-red-500 hover:bg-gray-100"
                             >
-                                Logout
+                               <Power size={16} /> Logout
                             </button>
                         </div>
                     )}
