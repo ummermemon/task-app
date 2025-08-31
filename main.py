@@ -76,6 +76,7 @@ def read_users_me(user_id: str = Depends(get_current_user)):
 
     return {
         "status": True,
+        "_id": user_id,
         "first_name": user["first_name"],
         "last_name": user["last_name"],
         "email": user["email"],
@@ -89,7 +90,7 @@ def signup(user: User):
     existing_user = user_collection.find_one({"email": user.email})
 
     if existing_user:
-        raise HTTPException(status_code=400, detail="User already exists")
+        return {"status":False,"message": "User already exist!"}
 
     # Hash password
     hashed_password = bcrypt.hash(user.password)
@@ -99,8 +100,16 @@ def signup(user: User):
     user_dict["password"] = hashed_password
     user_dict["profile_image"] = "uploads/default.png"
 
-    user_collection.insert_one(user_dict)
-    return {"message": "User signed up successfully!"}
+    result = user_collection.insert_one(user_dict)
+    
+    payload = {
+        "sub": str(result.inserted_id),
+        "email": user.email,
+        "exp": datetime.utcnow() + timedelta(hours=2)
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    return {"status":True,"message": "User signed up successfully!", "token":token}
 
 @app.post("/login")
 def login(login: Login):
