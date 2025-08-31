@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
+from passlib.hash import bcrypt
 
 app = FastAPI()
 
@@ -19,6 +20,14 @@ task_db = client['task_db']
 task_collection = task_db['tasks']
 user_collection = task_db['users']
 
+
+class User(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    password: str
+
+
 class Task(BaseModel):
     title: str = Field(...,min_length=5,max_length=25)
     description: str = Field(...,min_length=5,max_length=150)
@@ -31,6 +40,23 @@ class TaskUpdate(BaseModel):
 class TaskStatusUpdate(BaseModel):
     completed: bool
 
+@app.post("/signup")
+def signup(user: User):
+
+    existing_user = user_collection.find_one({"email": user.email})
+
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    # Hash password
+    hashed_password = bcrypt.hash(user.password)
+
+    user_dict = user.dict()
+    user_dict["password"] = hashed_password
+    user_dict["profile_image"] = "uploads/default.png"
+
+    user_collection.insert_one(user_dict)
+    return {"message": "User signed up successfully!"}
 
 @app.get("/")
 def home(request: Request):
