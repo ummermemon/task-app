@@ -17,7 +17,10 @@ function Add() {
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks/add`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify(data)
             });
             if (response.ok) {
