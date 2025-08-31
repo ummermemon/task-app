@@ -7,33 +7,52 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Add from './tasks/Add';
 import Edit from './tasks/Edit';
-import PrivateRoute from './PrivateRoute'
-import AuthRoute from './AuthRoute'
-
+import PrivateRoute from './PrivateRoute';
+import AuthRoute from './AuthRoute';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthRoute>
-
       <Routes>
-        <Route path='/login' element={<Login />} />
+        {/* Public/Auth route */}
+        <Route
+          path="/login"
+          element={
+            <AuthRoute>
+              <Login />
+            </AuthRoute>
+          }
+        />
+
+        {/* Protected routes */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <List />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add"
+          element={
+            <PrivateRoute>
+              <Add />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/edit/:id"
+          element={
+            <PrivateRoute>
+              <Edit />
+            </PrivateRoute>
+          }
+        />
       </Routes>
-      </AuthRoute>
-      <PrivateRoute>
-        <Routes>
-          <Route path='/' element={<List />} />
-          <Route path='/add' element={<Add />} />
-          <Route path='/edit/:id' element={<Edit />} />
-        </Routes>
-      </PrivateRoute>
-      
     </BrowserRouter>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
