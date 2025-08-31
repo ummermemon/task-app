@@ -27,6 +27,10 @@ class User(BaseModel):
     email: str
     password: str
 
+class Login(BaseModel):
+    email: str
+    password: str
+
 
 class Task(BaseModel):
     title: str = Field(...,min_length=5,max_length=25)
@@ -52,11 +56,23 @@ def signup(user: User):
     hashed_password = bcrypt.hash(user.password)
 
     user_dict = user.dict()
+    user_dict["role"] = "employee"
     user_dict["password"] = hashed_password
     user_dict["profile_image"] = "uploads/default.png"
 
     user_collection.insert_one(user_dict)
     return {"message": "User signed up successfully!"}
+
+@app.post("/login")
+def login(login: Login):
+    user = user_collection.find_one({"email": login.email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not bcrypt.verify(login.password, user["password"]):
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    return {"message": "Login successful"}
 
 @app.get("/")
 def home(request: Request):
